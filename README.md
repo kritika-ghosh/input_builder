@@ -7,7 +7,7 @@ This project was designated as a "challenging task" by Dr. Satyam Ravi Shrivasta
 
 ## Team Members
 - Shivi Sanjay
-- Tanisha Pnickar
+- Tanisha Panickar
 - Adwita Jain
 - Kritika Ghosh
 
