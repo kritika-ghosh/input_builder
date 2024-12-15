@@ -90,10 +90,21 @@ $END
 ```
 .
 ├── input_builder.py   # Main Python script for the GUI
-├── sample.inp       # Sample input file
-├── example.xyz       # Example of XMOL file needed 
-├── README.md       # Project documentation
+├── sample.inp         # Sample input file
+├── example.xyz        # Example of XMOL file needed
+├── input_builder.exe  # executable file
+├── README.md          # Project documentation
 ```
+
+## Note
+
+Inorder to run the executable file, you might have to temporarily disable the windows security. To do this:
+1. go to search
+2. go to windows security
+3. under "virus and threat protection" click on "manage settings"
+4. toggle off "real time threat protection"
+5. download the executable file and run it
+6. toggle on "real time threat protection"
 
 ## Contributing
 
