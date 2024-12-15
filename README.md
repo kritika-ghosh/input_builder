@@ -2,6 +2,15 @@
 
 A Python-based GUI tool for generating GAMESS input files with customizable parameters and automatic processing of molecular geometry data from XMOL/XYZ files. This project simplifies the creation of input files for computational chemistry simulations.
 
+## Background
+This project was designated as a "challenging task" by Dr. Satyam Ravi Shrivastava, our Professor for Computational Chemistry.
+
+## Team Members
+- Shivi Sanjay
+- Tanisha Pnickar
+- Adwita Jain
+- Kritika Ghosh
+
 ## Features
 
 - **User-Friendly GUI**: Built using the CustomTkinter library, ensuring a clean and modern interface.
@@ -22,13 +31,17 @@ Install required libraries using:
 pip install customtkinter
 ```
 
+```bash
+pip install tkinter
+```
+
 ## Installation
 
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/<your-username>/gamess-input-builder.git
-   cd gamess-input-builder
+   git clone https://github.com/kritika-ghosh/input_builder.git
+   cd input_builder
    ```
 
 2. Install the required libraries.
@@ -36,7 +49,7 @@ pip install customtkinter
 3. Run the program:
 
    ```bash
-   python gamess_gui.py
+   python input_builder.py
    ```
 
 ## Usage
@@ -76,7 +89,9 @@ $END
 
 ```
 .
-├── gamess_gui.py   # Main Python script for the GUI
+├── input_builder.py   # Main Python script for the GUI
+├── sample.inp       # Sample input file
+├── example.xyz       # Example of XMOL file needed 
 ├── README.md       # Project documentation
 ```
 
@@ -84,7 +99,7 @@ $END
 
 Contributions are welcome! If you have suggestions or find issues, feel free to create a pull request or open an issue.
 
-## Author
+## Authors
 
-Developed by Kritika Ghosh / kritika-ghosh.
+Developed by Kritika Ghosh / kritika-ghosh, Shivi Sanjay / shivi1212hub, Adwita Jain / jainadwita, Tanisha Panikar / tanishapanikar
 
