@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 import os
 
-# Atomic numbers mapping
+# Atomic numbers mapping: A dictionary mapping element symbols to their atomic numbers
 ATOMIC_NUMBERS = {
     'H': 1, 'He': 2, 'Li': 3, 'Be': 4, 'B': 5, 'C': 6, 'N': 7, 'O': 8, 'F': 9,
     'Ne': 10, 'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P': 15, 'S': 16, 'Cl': 17,
@@ -24,22 +24,28 @@ ATOMIC_NUMBERS = {
 
 class GamessOptGUI:
     def __init__(self, root):
+        # Set appearance mode and theme for the GUI
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
+        
+        # Initialize the main window
         self.root = root
         self.root.title("GAMESS Input File Builder")
 
+        # Create a frame to contain the widgets
         frame = ctk.CTkFrame(root)
         frame.pack(padx=10, pady=10)
 
+        # Dictionary to store input fields with their default values
         self.fields = {
-            "Memory (MW)": tk.StringVar(value="50"),
-            "Memory DDI": tk.StringVar(value="30"),
-            "Spin": tk.StringVar(value="1"),
-            "Charge": tk.StringVar(value="0"),
-            "Output File Name": tk.StringVar(value="optg.inp"),
+            "Memory (MW)": tk.StringVar(value="50"),        # Default memory in MB
+            "Memory DDI": tk.StringVar(value="30"),         # Default DDI memory
+            "Spin": tk.StringVar(value="1"),                # Default spin state
+            "Charge": tk.StringVar(value="0"),              # Default charge
+            "Output File Name": tk.StringVar(value="optg.inp"),  # Default output file name
         }
 
+        # Available options for method, runtype, basis set, and scftyp
         self.method_options = ["b3lyp", "mp2", "ump2", "ccsd", "uccsd"]
         self.method_var = tk.StringVar(value=self.method_options[0])
 
@@ -54,50 +60,60 @@ class GamessOptGUI:
 
         row = 0
 
+        # Create input fields for the user to enter parameters
         for label, var in self.fields.items():
             ctk.CTkLabel(frame, text=label).grid(row=row, column=0, sticky="w", pady=5)
             ctk.CTkEntry(frame, textvariable=var, width=70).grid(row=row, column=1, padx=5)
             row += 1
 
+        # Dropdown for selecting the method (e.g., B3LYP, MP2)
         ctk.CTkLabel(frame, text="Method").grid(row=row, column=0, sticky="w", pady=5)
         self.method_dropdown = ctk.CTkOptionMenu(frame, variable=self.method_var, values=self.method_options)
         self.method_dropdown.grid(row=row, column=1, padx=5, pady=5)
         row += 1
 
+        # Dropdown for selecting the RUNTYPE (e.g., OPTIMIZE, ENERGY)
         ctk.CTkLabel(frame, text="RUNTYPE").grid(row=row, column=0, sticky="w", pady=5)
         self.runtype_dropdown = ctk.CTkOptionMenu(frame, variable=self.runtype_var, values=self.runtype_options)
         self.runtype_dropdown.grid(row=row, column=1, padx=5, pady=5)
         row += 1
 
+        # Dropdown for selecting SCFTYP (e.g., RHF, UHF)
         ctk.CTkLabel(frame, text="SCFTYP").grid(row=row, column=0, sticky="w", pady=5)
         self.scftyp_dropdown = ctk.CTkOptionMenu(frame, variable=self.scftyp_var, values=self.scftyp_options)
         self.scftyp_dropdown.grid(row=row, column=1, padx=5, pady=5)
         row += 1
 
+        # Dropdown for selecting the basis set
         ctk.CTkLabel(frame, text="Basis set").grid(row=row, column=0, sticky="w", pady=5)
         self.basis_set_dropdown = ctk.CTkOptionMenu(frame, variable=self.basis_set_var, values=self.basis_set_options)
         self.basis_set_dropdown.grid(row=row, column=1, padx=5, pady=5)
         row += 1
 
+        # Button to upload the geometry file
         ctk.CTkButton(frame, text="Upload Geometry File", command=self.upload_geometry_file).grid(
             row=row, column=0, columnspan=2, pady=10
         )
 
+        # Button to generate the GAMESS input file
         ctk.CTkButton(frame, text="Generate Input File", command=self.generate_input_file).grid(
             row=row + 1, column=0, columnspan=2, pady=10
         )
 
+        # Store geometry data
         self.geometry_data = ""
 
     def upload_geometry_file(self):
-        """Allows the user to upload a geometry file."""
+        """Allows the user to upload a geometry file and process its content."""
+        # Open a file dialog to select an XYZ geometry file
         file_path = filedialog.askopenfilename(title="Select XMOL File", filetypes=[("XYZ files", "*.xyz")])
         if file_path:
             try:
                 with open(file_path, "r") as file:
-                    lines = file.readlines()[2:]  # Skip the first two lines
+                    lines = file.readlines()[2:]  # Skip the first two lines which are metadata
                     geometry_lines = []
 
+                    # Process the lines containing atomic coordinates
                     for line in lines:
                         parts = line.split()
                         if len(parts) >= 4:
@@ -106,16 +122,19 @@ class GamessOptGUI:
                             atomic_number = ATOMIC_NUMBERS.get(element, 0)
                             geometry_lines.append(f"{element}  {atomic_number}\t{x}\t{y}\t{z}")
 
+                    # Join the processed geometry data
                     self.geometry_data = "\n".join(geometry_lines)
                 messagebox.showinfo("Success", "XMOL file loaded and processed successfully!")
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to read file: {e}")
 
     def generate_input_file(self):
-        """Generates the GAMESS input file."""
+        """Generates the GAMESS input file based on user inputs."""
         try:
+            # Collect input values from the fields and dropdowns
             config = {key: var.get() for key, var in self.fields.items()}
 
+            # Ensure geometry data is not empty
             if not self.geometry_data:
                 raise ValueError("Geometry data cannot be empty! Please upload a geometry file.")
 
@@ -124,6 +143,7 @@ class GamessOptGUI:
             scftyp = self.scftyp_var.get()
             basis_set = self.basis_set_var.get()
 
+            # Set level of theory based on selected method
             if method.lower() in ["mp2", "ump2"]:
                 level = "MPLEVL=2"
             elif method.lower() in ["ccsd", "uccsd"]:
@@ -131,11 +151,13 @@ class GamessOptGUI:
             else:
                 level = f"DFTTYP={method}"
 
+            # Set basis set definition based on selected option
             if basis_set == "6-311G**":
                 basis_definition = "GBASIS=N311 NGAUSS=6 NDFUNC=1 NPFUNC=1"
             else:
                 basis_definition = f"GBASIS={basis_set}"
 
+            # Create the GAMESS input file template
             template = f"""
 $CONTRL SCFTYP={scftyp} {level} RUNTYP={runtype} ICHARG={config['Charge']}
 COORD=UNIQUE MULT={config['Spin']} MAXIT=200 ISPHER=1 $END
@@ -150,6 +172,7 @@ C1
 $END
 """.strip()
 
+            # Define the output file name
             output_file = os.path.join(os.getcwd(), config["Output File Name"])
             with open(output_file, "w") as f:
                 f.write(template)
@@ -158,8 +181,8 @@ $END
         except Exception as e:
             messagebox.showerror("Error", f"Failed to create input file: {e}")
 
-
+# Main entry point for the application
 if __name__ == "__main__":
-    root = ctk.CTk()
-    app = GamessOptGUI(root)
-    root.mainloop()
+    root = ctk.CTk()  # Create the main window
+    app = GamessOptGUI(root)  # Create the GUI application instance
+    root.mainloop()  # Run the main event loop to display the GUI
